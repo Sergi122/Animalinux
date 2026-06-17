@@ -252,7 +252,24 @@ async function doUpload() {
 
 // ── Eventos ────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
-  // Login alternativo en pantalla de login
+  // Formulario de magic link
+  document.getElementById("form-magic")?.addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = document.getElementById("magic-email").value.trim();
+    const errEl = document.getElementById("magic-error");
+    const sentEl = document.getElementById("magic-sent");
+    errEl.classList.add("hidden");
+    try {
+      await loginWithMagicLink(email);
+      sentEl.classList.remove("hidden");
+      document.getElementById("form-magic").classList.add("hidden");
+    } catch (err) {
+      errEl.textContent = "Error: " + (err.message || "inténtalo de nuevo");
+      errEl.classList.remove("hidden");
+    }
+  });
+
+  // Login con GitHub (alternativo)
   document.getElementById("btn-login-github")?.addEventListener("click", loginWithGitHub);
 
   // Drop zone

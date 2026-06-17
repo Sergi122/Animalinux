@@ -42,8 +42,23 @@
     <div id="screen-login" class="center-box hidden">
       <div class="info-box">
         <h2>Inicia sesión para subir</h2>
-        <p>Necesitas una cuenta de GitHub para compartir tu mascota con la comunidad.</p>
-        <button id="btn-login-github" class="btn-accent big">Entrar con GitHub</button>
+        <p>Introduce tu email y te enviamos un enlace de acceso instantáneo.</p>
+
+        <form id="form-magic" style="width:100%;display:flex;flex-direction:column;gap:12px;">
+          <input type="email" id="magic-email" placeholder="tu@email.com"
+                 style="padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:1rem;width:100%;box-sizing:border-box;">
+          <button type="submit" class="btn-accent big">Enviar enlace de acceso</button>
+        </form>
+
+        <div id="magic-sent" class="hidden" style="margin-top:12px;color:var(--green,#a6e3a1);font-size:0.95rem;">
+          ✓ Revisa tu correo — haz clic en el enlace para entrar.
+        </div>
+        <div id="magic-error" class="hidden error-msg" style="margin-top:8px;"></div>
+
+        <div style="margin:18px 0;border-top:1px solid var(--border);padding-top:16px;font-size:0.85rem;color:var(--text2);">
+          ¿Tienes GitHub con email público?
+        </div>
+        <button id="btn-login-github" class="btn-outline big">Entrar con GitHub</button>
       </div>
     </div>
 
