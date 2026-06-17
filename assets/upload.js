@@ -254,7 +254,6 @@ async function doUpload() {
 document.addEventListener("DOMContentLoaded", () => {
   // Login alternativo en pantalla de login
   document.getElementById("btn-login-github")?.addEventListener("click", loginWithGitHub);
-  document.getElementById("btn-login-google")?.addEventListener("click", loginWithGoogle);
 
   // Drop zone
   const dz = document.getElementById("drop-zone");
