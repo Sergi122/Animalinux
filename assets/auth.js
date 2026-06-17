@@ -37,14 +37,7 @@ function setUser(user) {
 async function loginWithGitHub() {
   await sb.auth.signInWithOAuth({
     provider: "github",
-    options: { redirectTo: window.location.href }
-  });
-}
-
-async function loginWithGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: window.location.href }
+    options: { redirectTo: "https://sergi122.github.io/Animalinux/upload.html" }
   });
 }
 
