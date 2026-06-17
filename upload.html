@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subir mascota — AnimaLinux</title>
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src  'self' https://cdn.jsdelivr.net;
+    style-src   'self' 'unsafe-inline';
+    img-src     'self' blob: data: https://*.supabase.co https://avatars.githubusercontent.com https://lh3.googleusercontent.com;
+    connect-src 'self' https://*.supabase.co;
+    frame-ancestors 'none';
+  ">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-icon">🐾</span>
+        <span>AnimaLinux</span>
+      </a>
+      <nav>
+        <a href="index.html" class="nav-link">Galería</a>
+        <a href="upload.html" class="nav-link active">Subir mascota</a>
+      </nav>
+      <div class="auth-area">
+        <div id="user-info" class="hidden">
+          <img id="user-avatar" class="avatar" src="" alt="">
+          <span id="user-name"></span>
+          <button id="btn-logout" class="btn-ghost">Salir</button>
+        </div>
+        <button id="btn-login" class="btn-accent">Entrar con GitHub</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="upload-main">
+    <!-- Pantalla de login requerido -->
+    <div id="screen-login" class="center-box hidden">
+      <div class="info-box">
+        <h2>Inicia sesión para subir</h2>
+        <p>Necesitas una cuenta de GitHub o Google para compartir tu mascota con la comunidad.</p>
+        <button id="btn-login-github" class="btn-accent big">Entrar con GitHub</button>
+        <button id="btn-login-google" class="btn-outline big">Entrar con Google</button>
+      </div>
+    </div>
+
+    <!-- Formulario de subida -->
+    <div id="screen-form" class="upload-form hidden">
+      <h1>Subir mascota</h1>
+      <p class="sub">Sube un archivo <code>.alpack</code> exportado desde AnimaLinux.</p>
+
+      <!-- Drop zone -->
+      <div id="drop-zone" class="drop-zone">
+        <div id="dz-idle">
+          <span class="dz-icon">📦</span>
+          <p>Arrastra tu <code>.alpack</code> aquí<br>o <label for="file-input" class="link">haz clic para elegirlo</label></p>
+          <input type="file" id="file-input" accept=".alpack" hidden>
+        </div>
+        <div id="dz-preview" class="hidden">
+          <img id="preview-img" src="" alt="Preview">
+          <div id="preview-info">
+            <span id="preview-name"></span>
+            <span id="preview-poses"></span>
+            <span id="preview-size"></span>
+          </div>
+          <button id="dz-reset" class="btn-ghost small">✕ Cambiar archivo</button>
+        </div>
+      </div>
+
+      <!-- Campos -->
+      <div class="form-fields">
+        <label>
+          Nombre de la mascota *
+          <input type="text" id="field-name" placeholder="Ej: Gato Pixel" maxlength="60">
+        </label>
+        <label>
+          Descripción
+          <textarea id="field-desc" placeholder="Cuéntanos algo sobre tu mascota…" maxlength="300" rows="3"></textarea>
+        </label>
+        <label>
+          Etiquetas (separadas por coma)
+          <input type="text" id="field-tags" placeholder="gato, pixel art, 48x48">
+        </label>
+      </div>
+
+      <div id="upload-error" class="error-msg hidden"></div>
+
+      <div class="form-actions">
+        <a href="index.html" class="btn-ghost">Cancelar</a>
+        <button id="btn-submit" class="btn-accent big" disabled>Subir mascota</button>
+      </div>
+
+      <div id="upload-progress" class="progress-wrap hidden">
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <span id="progress-label">Subiendo…</span>
+      </div>
+    </div>
+
+    <!-- Éxito -->
+    <div id="screen-success" class="center-box hidden">
+      <div class="info-box success">
+        <span class="big-icon">🎉</span>
+        <h2>¡Mascota publicada!</h2>
+        <p id="success-msg">Ya está disponible en la galería.</p>
+        <a href="index.html" class="btn-accent">Ver galería</a>
+        <a href="upload.html" class="btn-outline">Subir otra</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/upload.js"></script>
+</body>
+</html>

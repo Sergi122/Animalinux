@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnimaLinux — Galería de Mascotas</title>
+  <!-- CSP: bloquea scripts/estilos externos no autorizados -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src  'self' https://cdn.jsdelivr.net;
+    style-src   'self' 'unsafe-inline';
+    img-src     'self' blob: data: https://*.supabase.co https://avatars.githubusercontent.com https://lh3.googleusercontent.com;
+    connect-src 'self' https://*.supabase.co;
+    frame-ancestors 'none';
+  ">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-icon">🐾</span>
+        <span>AnimaLinux</span>
+      </a>
+      <nav>
+        <a href="index.html" class="nav-link active">Galería</a>
+        <a href="upload.html" class="nav-link" id="nav-upload">Subir mascota</a>
+      </nav>
+      <div class="auth-area">
+        <div id="user-info" class="hidden">
+          <img id="user-avatar" class="avatar" src="" alt="">
+          <span id="user-name"></span>
+          <button id="btn-logout" class="btn-ghost">Salir</button>
+        </div>
+        <button id="btn-login" class="btn-accent">
+          Entrar con GitHub
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Mascotas para tu escritorio</h1>
+      <p>Descarga animaciones <code>.alpack</code> creadas por la comunidad e impórtalas directamente en AnimaLinux.</p>
+      <div class="search-bar">
+        <input id="search" type="text" placeholder="Buscar mascota o autor…" autocomplete="off">
+        <div class="filter-pills" id="pose-filters">
+          <button class="pill active" data-pose="">Todas</button>
+          <button class="pill" data-pose="walk">walk</button>
+          <button class="pill" data-pose="idle">idle</button>
+          <button class="pill" data-pose="greet">greet</button>
+          <button class="pill" data-pose="jump">jump</button>
+          <button class="pill" data-pose="angry">angry</button>
+          <button class="pill" data-pose="grab">grab</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery-section">
+      <div id="gallery" class="gallery-grid">
+        <div class="loading-msg">Cargando mascotas…</div>
+      </div>
+      <div id="empty-msg" class="empty-msg hidden">
+        No hay mascotas que coincidan con la búsqueda.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>AnimaLinux · <a href="https://github.com/tu-usuario/animalinux" target="_blank">GitHub</a> · Formato <code>.alpack</code> libre</p>
+  </footer>
+
+  <!-- Template de tarjeta -->
+  <template id="pack-card-tpl">
+    <article class="pack-card">
+      <div class="card-preview">
+        <img class="preview-img" src="" alt="">
+        <span class="pose-count"></span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-name"></h3>
+        <p class="card-author"></p>
+        <p class="card-desc"></p>
+        <div class="card-poses"></div>
+        <div class="card-footer">
+          <span class="card-downloads"></span>
+          <a class="btn-download" href="#">⬇ Descargar</a>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/gallery.js"></script>
+</body>
+</html>
