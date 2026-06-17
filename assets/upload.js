@@ -269,8 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Login con GitHub (alternativo)
-  document.getElementById("btn-login-github")?.addEventListener("click", loginWithGitHub);
 
   // Drop zone
   const dz = document.getElementById("drop-zone");
