@@ -13,6 +13,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import JSZip from "https://esm.sh/jszip@3.10.1";
 
 const PNG_MAGIC   = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const GIF_MAGIC_1 = [0x47, 0x49, 0x46, 0x38, 0x37, 0x61];  // "GIF87a"
+const GIF_MAGIC_2 = [0x47, 0x49, 0x46, 0x38, 0x39, 0x61];  // "GIF89a"
 const MAX_MB      = 50;
 const MAX_UNZIP   = 200 * 1024 * 1024;  // 200 MB descomprimido
 const MAX_FRAMES  = 500;
@@ -21,6 +23,19 @@ const SAFE_PATH   = /^poses\/[a-zA-Z0-9_-]{1,32}\/frame_\d{4}\.png$/;
 function isPng(buf: ArrayBuffer): boolean {
   const b = new Uint8Array(buf.slice(0, 8));
   return PNG_MAGIC.every((v, i) => b[i] === v);
+}
+
+function isGif(buf: ArrayBuffer): boolean {
+  const b = new Uint8Array(buf.slice(0, 6));
+  return GIF_MAGIC_1.every((v, i) => b[i] === v) || GIF_MAGIC_2.every((v, i) => b[i] === v);
+}
+
+// MP4/MOV: caja "ftyp" en el offset 4-7 (bytes 0-3 son el tamaño de la caja,
+// que varía) — es la firma estándar de contenedores ISO BMFF.
+function isMp4(buf: ArrayBuffer): boolean {
+  if (buf.byteLength < 12) return false;
+  const b = new Uint8Array(buf.slice(4, 8));
+  return b[0] === 0x66 && b[1] === 0x74 && b[2] === 0x79 && b[3] === 0x70;  // "ftyp"
 }
 
 Deno.serve(async (req) => {
@@ -51,7 +66,32 @@ Deno.serve(async (req) => {
       return new Response("too large", { status: 200 });
     }
 
-    // ── Validar ZIP ───────────────────────────────────────────────────
+    const kind = pack.kind || "alpack";
+
+    // ── GIF / MP4: validar por firma de archivo (magic bytes), no por
+    // extensión — la extensión del nombre no prueba nada. Estos formatos
+    // no admiten "rutas" ni "frames sueltos" como el zip, así que la
+    // revisión es más simple: firma correcta + tamaño ya acotado arriba.
+    if (kind === "gif") {
+      const buf = await fileData.arrayBuffer();
+      if (!isGif(buf)) {
+        await rejectPack(sb, pack, "No es un GIF real (firma inválida).");
+        return new Response("fake gif", { status: 200 });
+      }
+      await sb.from("packs").update({ verified: true }).eq("id", pack.id);
+      return new Response("ok", { status: 200 });
+    }
+    if (kind === "mp4") {
+      const buf = await fileData.arrayBuffer();
+      if (!isMp4(buf)) {
+        await rejectPack(sb, pack, "No es un MP4 real (firma inválida).");
+        return new Response("fake mp4", { status: 200 });
+      }
+      await sb.from("packs").update({ verified: true }).eq("id", pack.id);
+      return new Response("ok", { status: 200 });
+    }
+
+    // ── Validar ZIP (.alpack) ─────────────────────────────────────────
     let zip: any;
     try {
       zip = await JSZip.loadAsync(await fileData.arrayBuffer());
