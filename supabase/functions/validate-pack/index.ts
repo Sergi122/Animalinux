@@ -41,8 +41,8 @@ function isMp4(buf: ArrayBuffer): boolean {
 Deno.serve(async (req) => {
   try {
     const payload = await req.json();
-    const pack = payload.record;
-    if (!pack?.id || !pack?.file_path) {
+    const recordId = payload.record?.id;
+    if (!recordId) {
       return new Response("no pack data", { status: 400 });
     }
 
@@ -50,6 +50,19 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Releer la fila completa por id en vez de confiar en el payload del
+    // trigger: si el trigger que dispara esto es viejo (de antes de sumar
+    // la columna "kind"), puede no reenviarla — así siempre se usa el
+    // estado real y actual de la fila.
+    const { data: pack, error: fetchErr } = await sb
+      .from("packs")
+      .select("*")
+      .eq("id", recordId)
+      .single();
+    if (fetchErr || !pack?.file_path) {
+      return new Response("no pack data", { status: 400 });
+    }
 
     // ── Descargar el archivo desde Storage ────────────────────────────
     const { data: fileData, error: dlErr } = await sb.storage
@@ -66,7 +79,12 @@ Deno.serve(async (req) => {
       return new Response("too large", { status: 200 });
     }
 
-    const kind = pack.kind || "alpack";
+    // La extensión real del archivo manda por sobre lo que diga la columna
+    // "kind" (defensivo: si algo quedó mal seteado, no confiar ciegamente).
+    const extKind = pack.file_path.toLowerCase().endsWith(".gif") ? "gif"
+                  : pack.file_path.toLowerCase().endsWith(".mp4") ? "mp4"
+                  : "alpack";
+    const kind = pack.kind && pack.kind === extKind ? pack.kind : extKind;
 
     // ── GIF / MP4: validar por firma de archivo (magic bytes), no por
     // extensión — la extensión del nombre no prueba nada. Estos formatos
